@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace KoganeUnityLib
 {
-	public static class EmptyFolderDeleter
+	internal static class EmptyFolderDeleter
 	{
 		[MenuItem( "Assets/Delete Empty Folder" )]
 		private static void Delete()
