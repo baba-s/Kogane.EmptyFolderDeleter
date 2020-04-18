@@ -1,7 +1,6 @@
 {
-    "name": "com.baba_s.uni-empty-folder-deleter",
+    "name": "UniEmptyFolderDeleter",
     "references": [],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -10,5 +9,6 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": []
 }

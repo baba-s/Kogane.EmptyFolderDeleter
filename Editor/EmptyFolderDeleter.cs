@@ -1,23 +1,120 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEditor;
+using UnityEngine;
 
-namespace KoganeUnityLib
+namespace UniEmptyFolderDeleter
 {
-	internal static class EmptyFolderDeleter
+	/// <summary>
+	/// すべての空フォルダを削除するエディタ拡張
+	/// </summary>
+	public static class EmptyFolderDeleter
 	{
-		[MenuItem( "Assets/Delete Empty Folder" )]
-		private static void Delete()
-		{
-			DoDelete( "Assets" );
+		//================================================================================
+		// 定数
+		//================================================================================
+		private const string NAME           = "UniEmptyFolderDeleter";
+		private const string ITEM_NAME_ROOT = "Assets/" + NAME + "/";
+		private const string LOG_TAG        = "[" + NAME + "]";
+		private const string ASSETS_PATH    = "Assets";
 
-			AssetDatabase.Refresh();
+		//================================================================================
+		// デリゲート（static）
+		//================================================================================
+		/// <summary>
+		/// メニューから削除する処理を差し替えたい場合はこのデリゲートにコールバックを登録します
+		/// </summary>
+		public static Action OnDelete { private get; set; }
+
+		//================================================================================
+		// 関数（static）
+		//================================================================================
+		/// <summary>
+		/// Unity メニューからすべての空フォルダを削除するための関数
+		/// </summary>
+		[MenuItem( ITEM_NAME_ROOT + "すべての空フォルダ削除" )]
+		private static void DeleteFromMenu()
+		{
+			if ( OnDelete != null )
+			{
+				OnDelete();
+				return;
+			}
+
+			var isOk = EditorUtility.DisplayDialog
+			(
+				title: NAME,
+				message: "すべての空フォルダを削除しますか？",
+				ok: "OK",
+				cancel: "Cancel"
+			);
+
+			if ( !isOk ) return;
+
+			var result = Delete().ToArray();
+
+			if ( !result.Any() )
+			{
+				EditorUtility.DisplayDialog
+				(
+					title: NAME,
+					message: "空フォルダは存在しませんでした",
+					ok: "OK"
+				);
+
+				return;
+			}
+
+			EditorUtility.DisplayDialog
+			(
+				title: NAME,
+				message: "すべての空フォルダを削除しました\n削除したフォルダのパスはコンソールに出力されます",
+				ok: "OK"
+			);
+
+			Debug.Log( $"{LOG_TAG}\n{string.Join( "\n", result )}" );
 		}
 
-		private static void DoDelete( string path )
+		/// <summary>
+		/// Assets フォルダ以下のすべての空フォルダを削除します
+		/// </summary>
+		public static IReadOnlyList<string> Delete()
 		{
-			foreach ( var dir in Directory.GetDirectories( path ) )
+			return Delete( ASSETS_PATH );
+		}
+
+		/// <summary>
+		/// 指定されたフォルダ以下のすべての空フォルダを削除します
+		/// </summary>
+		public static IReadOnlyList<string> Delete( string path )
+		{
+			var list = new List<string>();
+
+			foreach ( var n in GetList( path ) )
 			{
-				DoDelete( dir );
+				var isSuccess = AssetDatabase.DeleteAsset( n );
+
+				if ( !isSuccess ) continue;
+
+				list.Add( n );
+			}
+
+			return list;
+		}
+
+		/// <summary>
+		/// 指定されたフォルダ以下のすべての空フォルダのパスを返します
+		/// </summary>
+		private static IEnumerable<string> GetList( string path )
+		{
+			foreach ( var dir in Directory.GetDirectories( path ).Select( c => c.Replace( "\\", "/" ) ) )
+			{
+				foreach ( var n in GetList( dir ) )
+				{
+					yield return n;
+				}
 
 				var files = Directory.GetFiles( dir );
 
@@ -27,7 +124,7 @@ namespace KoganeUnityLib
 
 				if ( dirs.Length != 0 ) continue;
 
-				AssetDatabase.DeleteAsset( dir );
+				yield return dir;
 			}
 		}
 	}
