@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace UniEmptyFolderDeleter
+namespace Kogane.Internal
 {
 	/// <summary>
 	/// すべての空フォルダを削除するエディタ拡張
 	/// </summary>
-	public static class EmptyFolderDeleter
+	internal static class EmptyFolderDeleter
 	{
 		//================================================================================
 		// 定数
@@ -21,14 +20,6 @@ namespace UniEmptyFolderDeleter
 		private const string ASSETS_PATH    = "Assets";
 
 		//================================================================================
-		// デリゲート（static）
-		//================================================================================
-		/// <summary>
-		/// メニューから削除する処理を差し替えたい場合はこのデリゲートにコールバックを登録します
-		/// </summary>
-		public static Action OnDelete { private get; set; }
-
-		//================================================================================
 		// 関数（static）
 		//================================================================================
 		/// <summary>
@@ -37,12 +28,6 @@ namespace UniEmptyFolderDeleter
 		[MenuItem( ITEM_NAME_ROOT + "すべての空フォルダ削除" )]
 		private static void DeleteFromMenu()
 		{
-			if ( OnDelete != null )
-			{
-				OnDelete();
-				return;
-			}
-
 			var isOk = EditorUtility.DisplayDialog
 			(
 				title: NAME,
@@ -80,7 +65,7 @@ namespace UniEmptyFolderDeleter
 		/// <summary>
 		/// Assets フォルダ以下のすべての空フォルダを削除します
 		/// </summary>
-		public static IReadOnlyList<string> Delete()
+		private static IReadOnlyList<string> Delete()
 		{
 			return Delete( ASSETS_PATH );
 		}
@@ -88,7 +73,7 @@ namespace UniEmptyFolderDeleter
 		/// <summary>
 		/// 指定されたフォルダ以下のすべての空フォルダを削除します
 		/// </summary>
-		public static IReadOnlyList<string> Delete( string path )
+		private static IReadOnlyList<string> Delete( string path )
 		{
 			var list = new List<string>();
 
