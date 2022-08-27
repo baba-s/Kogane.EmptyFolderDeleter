@@ -1,4 +1,4 @@
-# Uni Empty Folder Deleter
+# Kogane Empty Folder Deleter
 
 すべての空フォルダを削除できるエディタ拡張
 
