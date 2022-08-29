@@ -15,7 +15,6 @@ namespace Kogane.Internal
         // 定数
         //================================================================================
         private const string ITEM_NAME_ROOT = "Kogane/";
-        private const string ASSETS_PATH    = "Assets";
 
         //================================================================================
         // 関数（static）
@@ -36,7 +35,7 @@ namespace Kogane.Internal
 
             if ( !isOk ) return;
 
-            var result = Delete().ToArray();
+            var result = Delete();
 
             if ( !result.Any() )
             {
@@ -61,11 +60,14 @@ namespace Kogane.Internal
         }
 
         /// <summary>
-        /// Assets フォルダ以下のすべての空フォルダを削除します
+        /// Assets フォルダと Packages フォルダ以下のすべての空フォルダを削除します
         /// </summary>
-        private static IReadOnlyList<string> Delete()
+        private static string[] Delete()
         {
-            return Delete( ASSETS_PATH );
+            var deleteAssets   = Delete( "Assets" );
+            var deletePackages = Delete( "Packages" );
+
+            return deleteAssets.Concat( deletePackages ).ToArray();
         }
 
         /// <summary>
@@ -77,9 +79,17 @@ namespace Kogane.Internal
 
             foreach ( var n in GetList( path ) )
             {
-                var isSuccess = AssetDatabase.DeleteAsset( n );
+                if ( File.Exists( n ) )
+                {
+                    File.Delete( n );
+                }
 
-                if ( !isSuccess ) continue;
+                var metaPath = n + ".meta";
+
+                if ( File.Exists( metaPath ) )
+                {
+                    File.Delete( metaPath );
+                }
 
                 list.Add( n );
             }
