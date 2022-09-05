@@ -79,6 +79,8 @@ namespace Kogane.Internal
 
             foreach ( var n in GetList( path ) )
             {
+                if ( n == ".github" ) continue;
+
                 if ( File.Exists( n ) )
                 {
                     File.Delete( n );
