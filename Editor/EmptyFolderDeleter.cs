@@ -79,7 +79,7 @@ namespace Kogane.Internal
 
             foreach ( var x in GetList( path ) )
             {
-                if ( x == ".github" ) continue;
+                if ( x.StartsWith( ".github" ) ) continue;
 
                 if ( Directory.Exists( x ) )
                 {
