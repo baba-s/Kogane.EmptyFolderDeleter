@@ -81,9 +81,9 @@ namespace Kogane.Internal
             {
                 if ( n == ".github" ) continue;
 
-                if ( File.Exists( n ) )
+                if ( Directory.Exists( n ) )
                 {
-                    File.Delete( n );
+                    Directory.Delete( n );
                 }
 
                 var metaPath = n + ".meta";
