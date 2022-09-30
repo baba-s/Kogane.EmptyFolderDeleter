@@ -77,23 +77,23 @@ namespace Kogane.Internal
         {
             var list = new List<string>();
 
-            foreach ( var n in GetList( path ) )
+            foreach ( var x in GetList( path ) )
             {
-                if ( n == ".github" ) continue;
+                if ( x == ".github" ) continue;
 
-                if ( Directory.Exists( n ) )
+                if ( Directory.Exists( x ) )
                 {
-                    Directory.Delete( n );
+                    Directory.Delete( x );
                 }
 
-                var metaPath = n + ".meta";
+                var metaPath = x + ".meta";
 
                 if ( File.Exists( metaPath ) )
                 {
                     File.Delete( metaPath );
                 }
 
-                list.Add( n );
+                list.Add( x );
             }
 
             return list;
