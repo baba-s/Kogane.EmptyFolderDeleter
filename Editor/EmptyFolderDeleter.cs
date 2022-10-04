@@ -83,7 +83,11 @@ namespace Kogane.Internal
 
                 if ( Directory.Exists( x ) )
                 {
-                    Directory.Delete( x );
+                    // Mac だと空フォルダだと判定されたフォルダに対して
+                    // Directory.Delete( x ) を実行すると以下の例外が発生することがあったため
+                    // 再帰的な削除 Directory.Delete( x, true ) を行うように変更しました
+                    // IOException: Directory not empty
+                    Directory.Delete( x, true );
                 }
 
                 var metaPath = x + ".meta";
